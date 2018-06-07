@@ -174,17 +174,16 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Year { year: {year} }")
-                    .WithParam("year", date.Year)
+                    .Merge("(a:Year { year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.year = {year}")
                     .WithParams(
                         new
                         {
                             id = Guid.NewGuid().ToString(),
-                            date.Year
+                            year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -192,9 +191,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Year { year: {year} }")
+                    .Match("(a:Year { year: {year} })")
                     .WithParam("year", date.Year)
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -206,15 +205,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Quarter { quarter: {quarter}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            quarter = date.Quarter,
-                            year = date.Year
-                        })
+                    .Merge("(a:Quarter { quarter: {quarter}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, quarter: {quarter}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.quarter = {quarter}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -222,7 +215,7 @@ namespace Zen.Graph.TimeTree
                             quarter = date.Quarter,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -230,14 +223,14 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Quarter { month: {month}, year: {year} }")
+                    .Match("(a:Quarter { quarter: {quarter}, year: {year} })")
                     .WithParams(
                         new
                         {
                             quarter = date.Quarter,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -249,15 +242,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Month { month: {month}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            month = date.Month,
-                            year = date.Year
-                        })
+                    .Merge("(a:Month { month: {month}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, month: {month}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.month = {month}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -265,7 +252,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -273,14 +260,14 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Month { month: {month}, year: {year} }")
+                    .Match("(a:Month { month: {month}, year: {year} })")
                     .WithParams(
                         new
                         {
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -292,15 +279,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Week { week: {week}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            week = date.WeekNumber,
-                            year = date.Date.Year
-                        })
+                    .Merge("(a:Week { week: {week}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, week: {week}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.week = {week}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -308,7 +289,7 @@ namespace Zen.Graph.TimeTree
                             week = date.WeekNumber,
                             year = date.Date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -316,14 +297,14 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Week { week: {week}, year: {year} }")
+                    .Match("(a:Week { week: {week}, year: {year} })")
                     .WithParams(
                         new
                         {
                             week = date.WeekNumber,
                             year = date.Date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -335,16 +316,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Day { day: {day}, month: {month}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            day = date.Day,
-                            month = date.Month,
-                            year = date.Year
-                        })
+                    .Merge("(a:Day { day: {day}, month: {month}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, day: {day}, month: {month}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.day = {day}, a.month = {month}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -353,7 +327,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -361,7 +335,7 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Day { day: {day}, month: {month}, year: {year} }")
+                    .Match("(a:Day { day: {day}, month: {month}, year: {year} })")
                     .WithParams(
                         new
                         {
@@ -369,7 +343,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -381,17 +355,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Hour { hour: {hour}, day: {day}, month: {month}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            hour = date.Hour,
-                            day = date.Day,
-                            month = date.Month,
-                            year = date.Year
-                        })
+                    .Merge("(a:Hour { hour: {hour}, day: {day}, month: {month}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, hour: {hour}, day: {day}, month: {month}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.hour = {hour}, a.day = {day}, a.month = {month}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -401,7 +367,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -409,7 +375,7 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Hour { hour: {hour}, day: {day}, month: {month}, year: {year} }")
+                    .Match("(a:Hour { hour: {hour}, day: {day}, month: {month}, year: {year} })")
                     .WithParams(
                         new
                         {
@@ -418,7 +384,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -430,18 +396,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Minute { minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            minute = date.Minute,
-                            hour = date.Hour,
-                            day = date.Day,
-                            month = date.Month,
-                            year = date.Year
-                        })
+                    .Merge("(a:Minute { minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, minute: {minute}, hour: {hour}, day: {day}, month: {month}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.minute = {minute}, a.hour = {hour}, a.day = {day}, a.month = {month}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -452,7 +409,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -460,7 +417,7 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Minute { minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} }")
+                    .Match("(a:Minute { minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} })")
                     .WithParams(
                         new
                         {
@@ -470,7 +427,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -482,19 +439,9 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Merge("a:Second { second: {second}, minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} }")
-                    .WithParams(
-                        new
-                        {
-                            second = date.Second,
-                            minute = date.Minute,
-                            hour = date.Hour,
-                            day = date.Day,
-                            month = date.Month,
-                            year = date.Year
-                        })
+                    .Merge("(a:Second { second: {second}, minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} })")
                     .OnCreate()
-                    .Set("id = {id}, second: {second}, minute: {minute}, hour: {hour}, day: {day}, month: {month}, year = {year}")
+                    .Set("a.uniqueId = {id}, a.second = {second}, a.minute = {minute}, a.hour = {hour}, a.day = {day}, a.month = {month}, a.year = {year}")
                     .WithParams(
                         new
                         {
@@ -506,7 +453,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -514,7 +461,7 @@ namespace Zen.Graph.TimeTree
             {
                 var query = _graphClient
                     .Cypher
-                    .Match("a:Second { second: {second}, minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} }")
+                    .Match("(a:Second { second: {second}, minute: {minute}, hour: {hour}, day: {day}, month: {month}, year: {year} })")
                     .WithParams(
                         new
                         {
@@ -525,7 +472,7 @@ namespace Zen.Graph.TimeTree
                             month = date.Month,
                             year = date.Year
                         })
-                    .Return<string>("a.id");
+                    .Return<string>("a.uniqueId");
                 var results = await query.ResultsAsync.ConfigureAwait(false);
                 return results.FirstOrDefault();
             }
@@ -549,14 +496,16 @@ namespace Zen.Graph.TimeTree
             //MERGE(charlie) -[r: ACTED_IN]->(wallStreet)
             //    RETURN charlie.name, type(r), wallStreet.title
             var query = _graphClient.Cypher
-                .Match("from: " + sourceLinkType + " { id: {sourceLinkId} }, to: " + targetLinkType + " { id: {targetLinkId} }")
+                .Match(
+                    "(from: " + sourceLinkType + " { uniqueId: {sourceLinkId} })",
+                    "(to: " + targetLinkType + " { uniqueId: {targetLinkId} })")
                 .WithParams(
                     new
                     {
                         sourceLinkId,
                         targetLinkId
                     })
-                .Merge($"(from)-[n: {sourceToTargetRelType}]->(to)-[p: {targetToSourceRelType}]->(from)");
+                .Merge($"(from)-[n:{sourceToTargetRelType}]->(to)-[p:{targetToSourceRelType}]->(from)");
             return query.ExecuteWithoutResultsAsync();
         }
 
