@@ -115,6 +115,10 @@ namespace Zen.Graph.TimeTree
                     "PREV", "Year", yearId,
                     "NEXT", "Year", nextYearId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Years)
+            {
+                return yearId;
+            }
 
             // Create quarter
             var quarter = new CalendarQuarter(date);
@@ -133,8 +137,8 @@ namespace Zen.Graph.TimeTree
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     graphClient,
-                    "CONTAINED_BY", "Year", yearId,
-                    "SEGMENTED_BY", "Quarter", quarterId)
+                    "QUARTER", "Year", yearId,
+                    "PARENT", "Quarter", quarterId)
                 .ConfigureAwait(false);
 
             // Create month
@@ -153,15 +157,44 @@ namespace Zen.Graph.TimeTree
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     graphClient,
-                    "CONTAINED_BY", "Year", yearId,
-                    "COMPOSED_BY", "Month", monthId)
+                    "MONTH", "Year", yearId,
+                    "PARENT_YEAR", "Month", monthId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     graphClient,
-                    "CONTAINED_BY", "Quarter", quarterId,
-                    "SEGMENTED_BY", "Month", monthId)
+                    "MONTH", "Quarter", quarterId,
+                    "PARENT_QUARTER", "Month", monthId)
                 .ConfigureAwait(false);
 
+            // Create week
+            var weekId = await GetWeekIdentifierAsync(graphClient, date, true).ConfigureAwait(false);
+            var prevWeekId = await GetWeekIdentifierAsync(graphClient, date.AddDays(-7), false).ConfigureAwait(false);
+            var nextWeekId = await GetWeekIdentifierAsync(graphClient, date.AddDays(7), false).ConfigureAwait(false);
+            await CreateLinkIfNotExistsAsync(
+                    graphClient,
+                    "PREV", "Week", prevWeekId,
+                    "NEXT", "Week", weekId)
+                .ConfigureAwait(false);
+            await CreateLinkIfNotExistsAsync(
+                    graphClient,
+                    "PREV", "Week", weekId,
+                    "NEXT", "Week", nextWeekId)
+                .ConfigureAwait(false);
+            await CreateLinkIfNotExistsAsync(
+                    graphClient,
+                    "WEEK", "Year", yearId,
+                    "PARENT_YEAR", "Week", weekId)
+                .ConfigureAwait(false);
+            await CreateLinkIfNotExistsAsync(
+                    graphClient,
+                    "WEEK", "Quarter", quarterId,
+                    "PARENT_QUARTER", "Week", weekId)
+                .ConfigureAwait(false);
+            await CreateLinkIfNotExistsAsync(
+                    graphClient,
+                    "WEEK", "Month", monthId,
+                    "PARENT_QUARTER", "Week", weekId)
+                .ConfigureAwait(false);
 
             return null;
         }
@@ -284,6 +317,50 @@ namespace Zen.Graph.TimeTree
             }
         }
 
+        private async Task<string> GetWeekIdentifierAsync(IGraphClient graphClient, DateTimeOffset date, bool createIfNotExists)
+        {
+            var week = new CalendarWeek(date, _configuration.FirstDayOfWeek);
+            if (createIfNotExists)
+            {
+                var query = graphClient
+                    .Cypher
+                    .Merge("a:Week { week: {week}, year: {year} }")
+                    .WithParams(
+                        new
+                        {
+                            week = week.WeekNumber,
+                            year = date.Year
+                        })
+                    .OnCreate()
+                    .Set("id = {id}, week: {week}, year = {year}")
+                    .WithParams(
+                        new
+                        {
+                            id = Guid.NewGuid().ToString(),
+                            week = week.WeekNumber,
+                            year = date.Year
+                        })
+                    .Return<string>("a.id");
+                var results = await query.ResultsAsync.ConfigureAwait(false);
+                return results.FirstOrDefault();
+            }
+            else
+            {
+                var query = graphClient
+                    .Cypher
+                    .Match("a:Week { week: {week}, year: {year} }")
+                    .WithParams(
+                        new
+                        {
+                            week = week.WeekNumber,
+                            year = date.Year
+                        })
+                    .Return<string>("a.id");
+                var results = await query.ResultsAsync.ConfigureAwait(false);
+                return results.FirstOrDefault();
+            }
+        }
+
         private Task CreateLinkIfNotExistsAsync(
             IGraphClient graphClient,
             string sourceToTargetRelType,
@@ -310,7 +387,7 @@ namespace Zen.Graph.TimeTree
                         sourceLinkId,
                         targetLinkId
                     })
-                .Merge($"(from)-[n: {sourceToTargetRelType}]->(to)-[p: {targetToSourceRelType}]->(from)");
+                .Merge($"(from)-[:{sourceToTargetRelType}]->(to)-[:- {targetToSourceRelType}]->(from)");
             return query.ExecuteWithoutResultsAsync();
         }
 
@@ -320,20 +397,18 @@ namespace Zen.Graph.TimeTree
     {
         public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Sunday;
 
-        public bool IncludeSecond { get; set; } = false;
+        public TimeTreeSpecificity Specificity { get; set; } = TimeTreeSpecificity.Minutes;
+    }
 
-        public bool IncludeMinute { get; set; } = false;
-
-        public bool IncludeHour { get; set; } = true;
-
-        public bool IncludeDay { get; set; } = true;
-
-        public bool IncludeWeekNumber { get; set; } = true;
-
-        public bool IncludeMonth { get; set; } = true;
-
-        public bool IncludeQuarter { get; set; } = true;
-
-        public bool IncludeYear { get; set; } = true;
+    public enum TimeTreeSpecificity
+    {
+        Years,
+        Quarters,
+        Months,
+        Weeks,
+        Days,
+        Hours,
+        Minutes,
+        Secounds
     }
 }
