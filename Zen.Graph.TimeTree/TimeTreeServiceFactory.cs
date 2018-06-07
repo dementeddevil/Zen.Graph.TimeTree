@@ -17,7 +17,7 @@ namespace Zen.Graph.TimeTree
 
         public ITimeTreeService Create(TimeTreeConfiguration configuration = null)
         {
-            return new TimeTreeService(_graphClientFactory, configuration ?? _defaultConfiguration);
+            return new TimeTreeService(_graphClientFactory.Create(), configuration ?? _defaultConfiguration);
         }
     }
 }
