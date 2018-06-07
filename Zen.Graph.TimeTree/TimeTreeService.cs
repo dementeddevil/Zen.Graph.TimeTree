@@ -24,12 +24,12 @@ namespace Zen.Graph.TimeTree
             var prevYearId = await GetYearIdentifierAsync(date.AddYears(-1), false).ConfigureAwait(false);
             var nextYearId = await GetYearIdentifierAsync(date.AddYears(1), false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Year", prevYearId,
-                    "NEXT", "Year", yearId)
+                    "NEXT", "Year", prevYearId,
+                    "PREV", "Year", yearId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Year", yearId,
-                    "NEXT", "Year", nextYearId)
+                    "NEXT", "Year", yearId,
+                    "PREV", "Year", nextYearId)
                 .ConfigureAwait(false);
 
             // Create quarter
@@ -38,16 +38,16 @@ namespace Zen.Graph.TimeTree
             var prevQuarterId = await GetQuarterIdentifierAsync(quarter.Previous, false).ConfigureAwait(false);
             var nextQuarterId = await GetQuarterIdentifierAsync(quarter.Next, false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Quarter", prevQuarterId,
-                    "NEXT", "Quarter", quarterId)
+                    "NEXT", "Quarter", prevQuarterId,
+                    "PREV", "Quarter", quarterId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Quarter", quarterId,
-                    "NEXT", "Quarter", nextQuarterId)
+                    "NEXT", "Quarter", quarterId,
+                    "PREV", "Quarter", nextQuarterId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "CONTAINED_BY", "Year", yearId,
-                    "SEGMENTED_BY", "Quarter", quarterId)
+                    "CHILD_QUARTER", "Year", yearId,
+                    "PARENT_YEAR", "Quarter", quarterId)
                 .ConfigureAwait(false);
 
             // Create month
@@ -55,12 +55,12 @@ namespace Zen.Graph.TimeTree
             var prevMonthId = await GetMonthIdentifierAsync(date.AddMonths(-1), false).ConfigureAwait(false);
             var nextMonthId = await GetMonthIdentifierAsync(date.AddMonths(1), false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Month", prevMonthId,
-                    "NEXT", "Month", monthId)
+                    "NEXT", "Month", prevMonthId,
+                    "PREV", "Month", monthId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Month", monthId,
-                    "NEXT", "Month", nextMonthId)
+                    "NEXT", "Month", monthId,
+                    "PREV", "Month", nextMonthId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     "CHILD_MONTH", "Year", yearId,
@@ -77,12 +77,12 @@ namespace Zen.Graph.TimeTree
             var prevWeekId = await GetWeekIdentifierAsync(week.Previous, false).ConfigureAwait(false);
             var nextWeekId = await GetWeekIdentifierAsync(week.Next, false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Week", prevWeekId,
-                    "NEXT", "Week", weekId)
+                    "NEXT", "Week", prevWeekId,
+                    "PREV", "Week", weekId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Week", weekId,
-                    "NEXT", "Week", nextWeekId)
+                    "NEXT", "Week", weekId,
+                    "PREV", "Week", nextWeekId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     "CHILD_WEEK", "Year", yearId,
@@ -98,12 +98,12 @@ namespace Zen.Graph.TimeTree
             var prevDayId = await GetDayIdentifierAsync(date.AddDays(-1), false).ConfigureAwait(false);
             var nextDayId = await GetDayIdentifierAsync(date.AddDays(1), false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Day", prevDayId,
-                    "NEXT", "Day", weekId)
+                    "NEXT", "Day", prevDayId,
+                    "PREV", "Day", weekId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Day", weekId,
-                    "NEXT", "Day", nextDayId)
+                    "NEXT", "Day", weekId,
+                    "PREV", "Day", nextDayId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     "CHILD_DAY", "Month", quarterId,
@@ -119,12 +119,12 @@ namespace Zen.Graph.TimeTree
             var prevHourId = await GetHourIdentifierAsync(date.AddHours(-1), false).ConfigureAwait(false);
             var nextHourId = await GetHourIdentifierAsync(date.AddHours(1), false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Hour", prevHourId,
-                    "NEXT", "Hour", hourId)
+                    "NEXT", "Hour", prevHourId,
+                    "PREV", "Hour", hourId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Hour", hourId,
-                    "NEXT", "Hour", nextHourId)
+                    "NEXT", "Hour", hourId,
+                    "PREV", "Hour", nextHourId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
                     "CHILD_HOUR", "Day", dayId,
@@ -136,16 +136,16 @@ namespace Zen.Graph.TimeTree
             var prevMinuteId = await GetMinuteIdentifierAsync(date.AddMinutes(-1), false).ConfigureAwait(false);
             var nextMinuteId = await GetMinuteIdentifierAsync(date.AddMinutes(1), false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Minute", prevMinuteId,
-                    "NEXT", "Minute", minuteId)
+                    "NEXT", "Minute", prevMinuteId,
+                    "PREV", "Minute", minuteId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Minute", minuteId,
-                    "NEXT", "Minute", nextMinuteId)
+                    "NEXT", "Minute", minuteId,
+                    "PREV", "Minute", nextMinuteId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "CHILD_HOUR", "Minute", hourId,
-                    "PARENT_DAY", "Hour", minuteId)
+                    "CHILD_MINUTE", "Minute", hourId,
+                    "PARENT_HOUR", "Hour", minuteId)
                 .ConfigureAwait(false);
 
             // Create second
@@ -153,16 +153,16 @@ namespace Zen.Graph.TimeTree
             var prevSecondId = await GetSecondIdentifierAsync(date.AddSeconds(-1), false).ConfigureAwait(false);
             var nextSecondId = await GetSecondIdentifierAsync(date.AddSeconds(1), false).ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Second", prevSecondId,
-                    "NEXT", "Second", secondId)
+                    "NEXT", "Second", prevSecondId,
+                    "PREV", "Second", secondId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "PREV", "Second", secondId,
-                    "NEXT", "Second", nextSecondId)
+                    "NEXT", "Second", secondId,
+                    "PREV", "Second", nextSecondId)
                 .ConfigureAwait(false);
             await CreateLinkIfNotExistsAsync(
-                    "CHILD_HOUR", "Second", minuteId,
-                    "PARENT_DAY", "Minute", secondId)
+                    "CHILD_SECOND", "Second", minuteId,
+                    "PARENT_MINUTE", "Minute", secondId)
                 .ConfigureAwait(false);
 
             return secondId;

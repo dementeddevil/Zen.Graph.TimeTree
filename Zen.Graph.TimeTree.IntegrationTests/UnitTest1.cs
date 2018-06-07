@@ -7,8 +7,8 @@ namespace Zen.Graph.TimeTree.IntegrationTests
 {
     public class UnitTest1
     {
-        [Fact]
-        public Task Test1()
+        [Fact(DisplayName = "Add 100 date entries")]
+        public async Task Test1()
         {
             var graphClientFactory = new GraphClientFactory(
                 NeoServerConfiguration.GetConfiguration(
@@ -18,7 +18,12 @@ namespace Zen.Graph.TimeTree.IntegrationTests
             var timeTreeFactory = new TimeTreeServiceFactory(graphClientFactory, new TimeTreeConfiguration());
             var timeTreeService = timeTreeFactory.Create();
 
-            return timeTreeService.Get(DateTimeOffset.UtcNow);
+            var date = DateTimeOffset.UtcNow;
+            for (var index = 0; index < 100; ++index)
+            {
+                await timeTreeService.Get(date).ConfigureAwait(true);
+                date = date.AddSeconds(18).AddMinutes(14).AddHours(1.3).AddDays(2.3);
+            }
         }
     }
 }
