@@ -6,20 +6,18 @@ namespace Zen.Graph.TimeTree
     {
         public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Sunday;
 
-        public bool IncludeSecond { get; set; } = false;
+        public TimeTreeSpecificity Specificity { get; set; } = TimeTreeSpecificity.Minutes;
+    }
 
-        public bool IncludeMinute { get; set; } = false;
-
-        public bool IncludeHour { get; set; } = true;
-
-        public bool IncludeDay { get; set; } = true;
-
-        public bool IncludeWeekNumber { get; set; } = true;
-
-        public bool IncludeMonth { get; set; } = true;
-
-        public bool IncludeQuarter { get; set; } = true;
-
-        public bool IncludeYear { get; set; } = true;
+    public enum TimeTreeSpecificity
+    {
+        Years,
+        Quarters,
+        Months,
+        Weeks,
+        Days,
+        Hours,
+        Minutes,
+        Secounds
     }
 }
