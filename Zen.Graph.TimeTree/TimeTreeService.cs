@@ -17,7 +17,7 @@ namespace Zen.Graph.TimeTree
             _configuration = configuration;
         }
 
-        public async Task<string> Get(DateTimeOffset date)
+        public async Task<TimeTreeReference> Get(DateTimeOffset date)
         {
             // Create year (link if possible)
             var yearId = await GetYearIdentifierAsync(date, true).ConfigureAwait(false);
@@ -31,6 +31,10 @@ namespace Zen.Graph.TimeTree
                     "NEXT", "Year", yearId,
                     "PREV", "Year", nextYearId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Years)
+            {
+                return new TimeTreeReference("Year", yearId);
+            }
 
             // Create quarter
             var quarter = new CalendarQuarter(date);
@@ -49,6 +53,10 @@ namespace Zen.Graph.TimeTree
                     "CHILD_QUARTER", "Year", yearId,
                     "PARENT_YEAR", "Quarter", quarterId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Quarters)
+            {
+                return new TimeTreeReference("Quarter", quarterId);
+            }
 
             // Create month
             var monthId = await GetMonthIdentifierAsync(date, true).ConfigureAwait(false);
@@ -70,6 +78,10 @@ namespace Zen.Graph.TimeTree
                     "CHILD_MONTH", "Quarter", quarterId,
                     "PARENT_QUARTER", "Month", monthId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Months)
+            {
+                return new TimeTreeReference("Month", monthId);
+            }
 
             // Create week
             var week = new CalendarWeek(date, _configuration.FirstDayOfWeek);
@@ -92,6 +104,10 @@ namespace Zen.Graph.TimeTree
                     "CHILD_WEEK", "Quarter", quarterId,
                     "PARENT_QUARTER", "Week", weekId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Weeks)
+            {
+                return new TimeTreeReference("Week", weekId);
+            }
 
             // Create day
             var dayId = await GetDayIdentifierAsync(date, true).ConfigureAwait(false);
@@ -113,6 +129,10 @@ namespace Zen.Graph.TimeTree
                     "CHILD_DAY", "Week", weekId,
                     "PARENT_WEEK", "Day", dayId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Days)
+            {
+                return new TimeTreeReference("Day", dayId);
+            }
 
             // Create hour
             var hourId = await GetHourIdentifierAsync(date, true).ConfigureAwait(false);
@@ -130,6 +150,10 @@ namespace Zen.Graph.TimeTree
                     "CHILD_HOUR", "Day", dayId,
                     "PARENT_DAY", "Hour", hourId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Hours)
+            {
+                return new TimeTreeReference("Hour", hourId);
+            }
 
             // Create minute
             var minuteId = await GetMinuteIdentifierAsync(date, true).ConfigureAwait(false);
@@ -147,6 +171,10 @@ namespace Zen.Graph.TimeTree
                     "CHILD_MINUTE", "Minute", hourId,
                     "PARENT_HOUR", "Hour", minuteId)
                 .ConfigureAwait(false);
+            if (_configuration.Specificity == TimeTreeSpecificity.Minutes)
+            {
+                return new TimeTreeReference("Minute", minuteId);
+            }
 
             // Create second
             var secondId = await GetSecondIdentifierAsync(date, true).ConfigureAwait(false);
@@ -165,7 +193,7 @@ namespace Zen.Graph.TimeTree
                     "PARENT_MINUTE", "Minute", secondId)
                 .ConfigureAwait(false);
 
-            return secondId;
+            return new TimeTreeReference("Second", secondId);
         }
 
         private async Task<string> GetYearIdentifierAsync(DateTimeOffset date, bool createIfNotExists)
